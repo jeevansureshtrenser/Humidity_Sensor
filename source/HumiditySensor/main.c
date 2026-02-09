@@ -17,6 +17,7 @@ INCLUDE FILES: common.h
 #include <vxWorks.h>
 #include <taskLib.h>
 #include <stdio.h>
+#include "monitor.h"
 
 /* defines */
 
@@ -56,9 +57,50 @@ int main(void)
 {
     while (1)
     {
-       
-        printf("Humidity monitor\n");
-        taskDelay(100); /* delay for 100 ticks */
+        int32_t humiditySensorVal  = 0;
+        ERROR_TYPE errorStatus     = NO_ERROR;
+
+        errorStatus = readHumiditySensorData(&humiditySensorVal);
+
+        if (errorStatus != NO_ERROR)
+        {
+            printf("Error in reading humidity sensor data\n");
+        }
+        else
+        {
+            errorStatus = monitorHumiditySensorData(&humiditySensorVal);
+            if (errorStatus != ERROR_INVALID)
+            {
+                errorStatus = setWarningAlarm(errorStatus, &humiditySensorVal);
+                if (errorStatus == ERROR_OUT_OF_BOUND)
+                {
+                    errorStatus = faultHandler();
+
+                    if (errorStatus != NO_ERROR)
+                    {
+                        printf("Error in fault handler\n");
+                    }
+                    else
+                    {
+                        /* No Process*/
+                    }
+                }
+                else if (errorStatus == ERROR_INVALID)
+                {
+                    printf("Error in setting warning alarm\n");
+                }
+                else
+                {
+                    /* No Process*/
+                }
+            }
+            else
+            {
+                /* No Process*/
+            }
+        }
+        
+        taskDelay(TIME_DELAY); /* delay for 100 ticks */
     }
 
     return 0;
