@@ -14,8 +14,10 @@ INCLUDE FILES: common.h
 */
 
 /* includes */
+#ifndef UNIT_TEST
 #include <vxWorks.h>
 #include <taskLib.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include "monitor.h"
@@ -274,6 +276,7 @@ ERROR_TYPE faultHandler(void)
         errorStatus = readHumiditySensorData(&iHumidtySensorVal);
         if (errorStatus != NO_ERROR)
         {
+            errorStatus = ERROR_INVALID;
             return errorStatus;
         }
 
@@ -283,10 +286,13 @@ ERROR_TYPE faultHandler(void)
         }
 
         uiCount++;
+        #ifndef UNIT_TEST
         taskDelay(ONE_SECOND); /* delay for one second */
+        #endif
     }
-
-    return ERROR_INVALID;
+    
+    errorStatus = ERROR_FAILED;
+    return errorStatus;
 }
 
 /* end of file*/
