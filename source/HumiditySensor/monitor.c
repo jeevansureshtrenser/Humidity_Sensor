@@ -14,7 +14,7 @@ INCLUDE FILES: common.h
 */
 
 /* includes */
-#ifdef UNIT_TEST
+#ifndef UNIT_TEST
 #include <vxWorks.h>
 #include <taskLib.h>
 #endif
@@ -286,7 +286,7 @@ ERROR_TYPE faultHandler(void)
         }
 
         uiCount++;
-        #ifdef UNIT_TEST
+        #ifndef UNIT_TEST
         taskDelay(ONE_SECOND); /* delay for one second */
         #endif
     }

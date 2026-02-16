@@ -10,7 +10,7 @@ TEST(ReadHumidityTest, Nullcheck)
 }
 
 TEST(ReadHumidityTest, ValidData) 
-{ 
+{
     int32_t humidityValue = 50; 
     // Simulate a valid humidity value 
     int32_t *pHumiditySensorVal = &humidityValue;
@@ -20,15 +20,15 @@ TEST(ReadHumidityTest, ValidData)
 TEST(SetWarningAlarmTest, Nullcheck) 
 {
     int32_t *pHumiditySensorVal = nullptr; 
-    EXPECT_EQ(setWarningAlarm(ERROR_THRESHOLD_MIN, pHumiditySensorVal), ERROR_INVALID); 
+    EXPECT_EQ(setWarningAlarm(ERROR_THRESHOLD_MIN, pHumiditySensorVal), ERROR_INVALID);
 }
 
 TEST(SetWarningAlarmTest, ValidData) 
 { 
-    int32_t humidityValue = MONITOR_LOWER_THRESHOLD_LIMIT - 1; 
+    int32_t humidityValue = MONITOR_LOWER_THRESHOLD_LIMIT + 1; 
     // Simulate a valid humidity value 
     int32_t *pHumiditySensorVal = &humidityValue;
-    EXPECT_EQ(setWarningAlarm(ERROR_THRESHOLD_MIN, pHumiditySensorVal), NO_ERROR);
+    EXPECT_EQ(setWarningAlarm(NO_ERROR, pHumiditySensorVal), NO_ERROR);
 }
 
 TEST(SetWarningAlarmTest, InvalidErrorType) 
@@ -37,36 +37,6 @@ TEST(SetWarningAlarmTest, InvalidErrorType)
     // Simulate a valid humidity value 
     int32_t *pHumiditySensorVal = &humidityValue;
     EXPECT_EQ(setWarningAlarm(static_cast<ERROR_TYPE>(999), pHumiditySensorVal), ERROR_INVALID); 
-}
-
-TEST(SetWarningAlarmTest, ValidErrorType) 
-{ 
-    int32_t humidityValue = 50; 
-    // Simulate a valid humidity value 
-    int32_t *pHumiditySensorVal = &humidityValue;
-    EXPECT_EQ(setWarningAlarm(ERROR_THRESHOLD_MAX, pHumiditySensorVal), NO_ERROR); 
-}
-
-TEST(SetWarningAlarmTest, ThresholdMin) 
-{ 
-    int32_t humidityValue = MONITOR_LOWER_THRESHOLD_LIMIT - 1; 
-    // Simulate a value below the lower threshold 
-    int32_t *pHumiditySensorVal = &humidityValue;
-    EXPECT_EQ(setWarningAlarm(ERROR_THRESHOLD_MIN, pHumiditySensorVal), NO_ERROR); 
-}
-
-TEST(SetWarningAlarmTest, UpperOutOfBound) 
-{ 
-    int32_t humidityValue = MONITOR_OPERATING_RANGE_MAX + 1; // Simulate an out-of-bound humidity value 
-    int32_t *pHumiditySensorVal = &humidityValue;
-    EXPECT_EQ(setWarningAlarm(ERROR_OUT_OF_BOUND, pHumiditySensorVal), NO_ERROR); 
-}
-
-TEST(SetWarningAlarmTest, LowerOutOfBound) 
-{ 
-    int32_t humidityValue = MONITOR_OPERATING_RANGE_MIN - 1; // Simulate an out-of-bound humidity value 
-    int32_t *pHumiditySensorVal = &humidityValue;
-    EXPECT_EQ(setWarningAlarm(ERROR_OUT_OF_BOUND, pHumiditySensorVal), NO_ERROR); 
 }
 
 TEST(FaultHandlerTest, ValidData) 

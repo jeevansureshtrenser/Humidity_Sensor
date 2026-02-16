@@ -14,7 +14,7 @@ INCLUDE FILES: common.h
 */
 
 /* includes */
-#ifdef UNIT_TEST
+#ifndef UNIT_TEST
 #include <vxWorks.h>
 #include <taskLib.h>
 #endif
@@ -101,8 +101,9 @@ int main(void)
                 /* No Process*/
             }
         }
-        
+        #ifndef UNIT_TEST
         taskDelay(TIME_DELAY); /* delay for 100 ticks */
+        #endif
     }
 
     return 0;
