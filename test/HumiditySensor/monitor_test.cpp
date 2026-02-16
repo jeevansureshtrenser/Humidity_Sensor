@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 extern "C" {
-    #include "monitor.h"
+    #include "../../source/HumiditySensor/monitor.h"
 }
 
 TEST(ReadHumidityTest, Nullcheck) 

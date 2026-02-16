@@ -14,7 +14,7 @@ INCLUDE FILES: common.h
 */
 
 /* includes */
-#ifndef UNIT_TEST
+#ifdef UNIT_TEST
 #include <vxWorks.h>
 #include <taskLib.h>
 #endif
