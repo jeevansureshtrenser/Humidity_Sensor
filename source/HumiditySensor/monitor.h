@@ -65,4 +65,8 @@ extern ERROR_TYPE faultHandler(void);
 extern ERROR_TYPE readHumiditySensorData(int32_t *pHumiditySensorVal);
 extern ERROR_TYPE setWarningAlarm(ERROR_TYPE error_type_t, int32_t *pHumiditySensorVal);
 
+#ifdef UNIT_TEST
+extern ERROR_TYPE (*readHumiditySensorDatamock)(int32_t *phumiditySensorVal);
+#endif
+
 #endif /* __INCmonitorh_ */

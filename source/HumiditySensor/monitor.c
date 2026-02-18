@@ -36,6 +36,11 @@ extern ERROR_TYPE faultHandler(void);
 extern ERROR_TYPE readHumiditySensorData(int32_t *pHumiditySensorVal);
 extern ERROR_TYPE setWarningAlarm(ERROR_TYPE error_type_t, int32_t *pHumiditySensorVal);
 
+#ifdef UNIT_TEST
+/* Mock function for unit testing */
+ERROR_TYPE (*readHumiditySensorDatamock)(int32_t *phumiditySensorVal) = readHumiditySensorData;
+#endif
+
 /* function definitions */
 
 /*******************************************************************************
@@ -273,14 +278,18 @@ ERROR_TYPE faultHandler(void)
 
     while (uiCount < MAX_READ_COUNT)
     {
+#ifdef UNIT_TEST
+        errorStatus = readHumiditySensorDatamock(&iHumidtySensorVal);
+#else
         errorStatus = readHumiditySensorData(&iHumidtySensorVal);
+#endif
         if (errorStatus != NO_ERROR)
         {
             errorStatus = ERROR_INVALID;
             return errorStatus;
         }
 
-        if (iHumidtySensorVal >= MONITOR_LOWER_THRESHOLD_LIMIT && iHumidtySensorVal <= MONITOR_OPERATING_RANGE_MAX)
+        if (iHumidtySensorVal >= MONITOR_OPERATING_RANGE_MIN && iHumidtySensorVal <= MONITOR_OPERATING_RANGE_MAX)
         {
             return NO_ERROR;
         }
