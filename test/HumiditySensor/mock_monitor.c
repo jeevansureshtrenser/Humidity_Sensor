@@ -1,16 +1,35 @@
+/* mock_monitor.c - mock function library */ 
+/* 
+* Copyright (c) 2026 Trenser Technologies Ltd. 
+* 
+* The right to copy, distribute, modify, or otherwise make use 
+* of this software may be licensed only pursuant to the terms 
+* of an applicable Trenser license agreement. 
+*/
+
+/* includes */
 #include "mock_monitor.h"
 #include "../../source/HumiditySensor/monitor.h"
 #include <stdio.h>
 
+/* defines */
+
+/* typedefs */
+
+/* globals */
+
+/* locals */
 int32_t g_iMockHumidityValue = 0; // Default mock humidity value for testing
 ERROR_TYPE g_errorTypeForMock = NO_ERROR; // Default error type for mock function
 int32_t g_iMockReadCount = 0; // Default read count for mock function
 
+/* function declarations */
 void setUpMockHumidityValue(int32_t value);
 void setErrorTypeForMock(ERROR_TYPE errorType);
 void setErrorReadCountForMock(uint32_t count);
 ERROR_TYPE mockreadHumiditySensorData(int32_t *phumiditySensorVal);
 
+/* function definitions */
 
 void setUpMockHumidityValue(int32_t value)
 {

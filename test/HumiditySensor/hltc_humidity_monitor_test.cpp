@@ -1,8 +1,20 @@
+/* hltc_humidity_monitor_test.c - test function library */ 
+/* 
+* Copyright (c) 2026 Trenser Technologies Ltd. 
+* 
+* The right to copy, distribute, modify, or otherwise make use 
+* of this software may be licensed only pursuant to the terms 
+* of an applicable Trenser license agreement. 
+*/
+
+/* includes */
 #include <gtest/gtest.h>
 extern "C" {
     #include "../../source/HumiditySensor/monitor.h"
     #include "mock_monitor.h"
 }
+
+/* Test Functions Definitions */
 
 TEST(ReadHumidity_HLTC_1, ReadHumidity_HLTC_Nullcheck) 
 {
