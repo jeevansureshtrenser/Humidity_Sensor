@@ -5,3 +5,4 @@ wrsdk-vxworks7-qemu-1.16.tar.bz2
 outputs/*
 test/HumiditySensor/gtest/*
 test/HumiditySensor/coverage/*
+source/*.txt

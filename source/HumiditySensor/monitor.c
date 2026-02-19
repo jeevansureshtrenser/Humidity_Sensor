@@ -295,9 +295,9 @@ ERROR_TYPE faultHandler(void)
         }
 
         uiCount++;
-        #ifndef UNIT_TEST
+#ifndef UNIT_TEST
         taskDelay(ONE_SECOND); /* delay for one second */
-        #endif
+#endif
     }
     
     errorStatus = ERROR_FAILED;
