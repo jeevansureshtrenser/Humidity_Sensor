@@ -31,10 +31,11 @@ INCLUDE FILES: common.h
 /* locals */
 
 /* function declarations */
-extern ERROR_TYPE monitorHumiditySensorData(int32_t *pHumditySensorVal);
-extern ERROR_TYPE faultHandler(void);
-extern ERROR_TYPE readHumiditySensorData(int32_t *pHumiditySensorVal);
-extern ERROR_TYPE setWarningAlarm(ERROR_TYPE error_type_t, int32_t *pHumiditySensorVal);
+ERROR_TYPE monitorHumiditySensorData(int32_t *pHumditySensorVal);
+ERROR_TYPE faultHandler(void);
+ERROR_TYPE readHumiditySensorData(int32_t *pHumiditySensorVal);
+ERROR_TYPE setWarningAlarm(ERROR_TYPE error_type_t, int32_t *pHumiditySensorVal);
+ERROR_TYPE monitorHumiditySensorMonitorloop(void);
 
 #ifdef UNIT_TEST
 /* Mock function for unit testing */
@@ -73,7 +74,10 @@ ERROR_TYPE (*readHumiditySensorDatamock)(int32_t *phumiditySensorVal) = readHumi
 */
 ERROR_TYPE readHumiditySensorData(int32_t *phumiditySensorVal)
 {
-
+    int32_t iHumidityMaxValue = 0; // Maximum value for humidity sensor data
+    int32_t iHumidityMinValue = 0; // Minimum value for humidity sensor data
+    iHumidityMaxValue = MONITOR_OPERATING_RANGE_MAX + CALIB_CONST; // Set maximum value with calibration constant
+    iHumidityMinValue = MONITOR_OPERATING_RANGE_MIN - CALIB_CONST; // Set minimum value with calibration constant
     if (phumiditySensorVal == NULL)
     {
         return ERROR_INVALID;
@@ -81,7 +85,7 @@ ERROR_TYPE readHumiditySensorData(int32_t *phumiditySensorVal)
     else
     {
         /* Mock function to read humidity sensor data */
-        *phumiditySensorVal = ((rand() % (MONITOR_OPERATING_RANGE_MAX - MONITOR_OPERATING_RANGE_MIN + 1)) + MONITOR_OPERATING_RANGE_MIN);
+        *phumiditySensorVal = ((rand() % (iHumidityMaxValue - iHumidityMinValue + 1)) + iHumidityMinValue);
     }
 
     return NO_ERROR;
@@ -273,15 +277,15 @@ ERROR_TYPE setWarningAlarm(ERROR_TYPE error_type_t, int32_t *pHumiditySensorVal)
 ERROR_TYPE faultHandler(void)
 {
     uint32_t uiCount = 0;
-    int32_t iHumidtySensorVal = 0;
+    int32_t iHumiditySensorVal = 0;
     ERROR_TYPE errorStatus = NO_ERROR;
 
     while (uiCount < MAX_READ_COUNT)
     {
 #ifdef UNIT_TEST
-        errorStatus = readHumiditySensorDatamock(&iHumidtySensorVal);
+        errorStatus = readHumiditySensorDatamock(&iHumiditySensorVal);
 #else
-        errorStatus = readHumiditySensorData(&iHumidtySensorVal);
+        errorStatus = readHumiditySensorData(&iHumiditySensorVal);
 #endif
         if (errorStatus != NO_ERROR)
         {
@@ -289,8 +293,9 @@ ERROR_TYPE faultHandler(void)
             return errorStatus;
         }
 
-        if (iHumidtySensorVal >= MONITOR_OPERATING_RANGE_MIN && iHumidtySensorVal <= MONITOR_OPERATING_RANGE_MAX)
+        if (iHumiditySensorVal >= MONITOR_OPERATING_RANGE_MIN && iHumiditySensorVal <= MONITOR_OPERATING_RANGE_MAX)
         {
+            printf("Sensor data back to normal range, exiting fault handler\n");
             return NO_ERROR;
         }
 
@@ -301,6 +306,92 @@ ERROR_TYPE faultHandler(void)
     }
     
     errorStatus = ERROR_FAILED;
+    return errorStatus;
+}
+
+/*******************************************************************************
+* monitorHumiditySensorMonitorloop - this function is the main loop for
+* monitoring humidity sensor data.
+* 
+* DESCRIPTION
+
+* This function is the main loop for monitoring humidity sensor data. This
+* function will read the humidity sensor data and check the data is in the
+* range of user defined threshold ranges or in operating range. The function
+* will print the warning message based on the error type. If the read sensor
+* value is out of bound then it will call the fault handler for error handling.
+*
+* This function will return:
+* 1. [NO_ERROR] when the read sensor value is in the range of user defined threshold and operating range.
+* 2. [ERROR_INVALID] when the sensor data less than [MIN_OPERATING_RANGE] or 
+* greater than [MAX_OPERATING_RANGE] after read the sensor value
+* [MAX_READ_COUNT] times.
+*
+* PARAMETERS:
+* <pHumditySensorVal> 
+* - [out] pointer to the humidity sensor value to be stored.
+*
+* GLOBALS: N/A
+* 
+* RETURNS: 
+* \is  
+* \i <NO_ERROR> - If humidity sensor data in the range of [MIN_OPERATING_RANGE] * and [MAX_OPERATING_RANGE]
+* \i <ERROR_INVALID> - If humidity sensor data out of [MIN_OPERATING_RANGE] and * [MAX_OPERATING_RANGE] range
+* \ie
+* 
+* ERRNO: N/A
+* 
+* \INTERNAL 
+*/
+ERROR_TYPE monitorHumiditySensorMonitorloop(void)
+{
+    int32_t iHumiditySensorVal = 0;
+    ERROR_TYPE errorStatus = NO_ERROR;
+
+#ifdef UNIT_TEST
+        errorStatus = readHumiditySensorDatamock(&iHumiditySensorVal);
+#else
+        errorStatus = readHumiditySensorData(&iHumiditySensorVal);
+#endif
+    if (errorStatus == ERROR_INVALID)
+    {
+        printf("Error in reading humidity sensor data\n");
+    }
+    else
+    {
+        errorStatus = monitorHumiditySensorData(&iHumiditySensorVal);
+        if (errorStatus != ERROR_INVALID)
+        {
+            (void)setWarningAlarm(errorStatus, &iHumiditySensorVal);
+            if (errorStatus == ERROR_OUT_OF_BOUND)
+            {
+                printf("Sensor data out of bound, invoking fault handler\n");
+                errorStatus = faultHandler();
+
+                if (errorStatus != NO_ERROR)
+                {
+                    printf("Error in fault handler\n");
+                    return ERROR_FAILED;
+                }
+                else
+                {
+                    /* No Process*/
+                }
+
+            }
+            else
+            {
+                 /* No Process*/
+            }
+        }
+        else
+        {
+           /* No Process*/
+        }
+    }
+#ifndef UNIT_TEST
+    taskDelay(TIME_DELAY); /* delay for 100 ticks */
+#endif
     return errorStatus;
 }
 

@@ -10,7 +10,7 @@ OUTDIR   = gtest
 TARGET   = $(OUTDIR)/runTests
 COV_DIR  = coverage
 
-.PHONY: all clean
+.PHONY: test clean
 
 # Compile C sources into OUTDIR
 $(OUTDIR)/%.o: ../../source/HumiditySensor/%.c
@@ -30,7 +30,7 @@ $(OUTDIR)/%.o: %.c
 	@echo "Compile C test source into $(OUTDIR)"
 	$(CC) $(CFLAGS) -c $< -o $@
 
-all: $(addprefix $(OUTDIR)/,$(TESTOBJ)) $(OUTDIR)/hltc_humidity_monitor_test.o $(OUTDIR)/lltc_humidity_monitor_test.o $(OUTDIR)/mock_monitor.o
+test: $(addprefix $(OUTDIR)/,$(TESTOBJ)) $(OUTDIR)/hltc_humidity_monitor_test.o $(OUTDIR)/lltc_humidity_monitor_test.o $(OUTDIR)/mock_monitor.o
 	$(CXX) --coverage $^ $(CXXFLAGS) -o $(TARGET)
 	@echo "Run test target $(TARGET)"
 	./$(TARGET)

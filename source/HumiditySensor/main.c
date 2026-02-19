@@ -57,55 +57,19 @@ INCLUDE FILES: common.h
 */
 int main(void)
 {
+
     while (1)
     {
-        int32_t humiditySensorVal  = 0;
-        ERROR_TYPE errorStatus     = NO_ERROR;
-
-        errorStatus = readHumiditySensorData(&humiditySensorVal);
-
-        if (errorStatus != NO_ERROR)
+        if (monitorHumiditySensorMonitorloop() != NO_ERROR)
         {
-            printf("Error in reading humidity sensor data\n");
+            printf("Error in monitoring humidity sensor data\n");
+            return -1; // Return failure if there is an error in monitoring
         }
         else
         {
-            errorStatus = monitorHumiditySensorData(&humiditySensorVal);
-            if (errorStatus != ERROR_INVALID)
-            {
-                errorStatus = setWarningAlarm(errorStatus, &humiditySensorVal);
-                if (errorStatus == ERROR_OUT_OF_BOUND)
-                {
-                    errorStatus = faultHandler();
-
-                    if (errorStatus != NO_ERROR)
-                    {
-                        printf("Error in fault handler\n");
-                    }
-                    else
-                    {
-                        /* No Process*/
-                    }
-                }
-                else if (errorStatus == ERROR_INVALID)
-                {
-                    printf("Error in setting warning alarm\n");
-                }
-                else
-                {
-                    /* No Process*/
-                }
-            }
-            else
-            {
-                /* No Process*/
-            }
+            /* No Process*/
         }
-        #ifndef UNIT_TEST
-        taskDelay(TIME_DELAY); /* delay for 100 ticks */
-        #endif
     }
-
     return 0;
 }
 

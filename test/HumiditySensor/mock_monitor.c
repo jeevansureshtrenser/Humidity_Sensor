@@ -22,12 +22,14 @@
 int32_t g_iMockHumidityValue = 0; // Default mock humidity value for testing
 ERROR_TYPE g_errorTypeForMock = NO_ERROR; // Default error type for mock function
 int32_t g_iMockReadCount = 0; // Default read count for mock function
-
+int32_t g_SetpointerToNull = 0; // Flag to indicate whether to set pointer to null in mock function
 /* function declarations */
 void setUpMockHumidityValue(int32_t value);
 void setErrorTypeForMock(ERROR_TYPE errorType);
 void setErrorReadCountForMock(uint32_t count);
+void setUphumiditysensorPointerNull();
 ERROR_TYPE mockreadHumiditySensorData(int32_t *phumiditySensorVal);
+
 
 /* function definitions */
 
@@ -47,6 +49,11 @@ void setErrorReadCountForMock(uint32_t count)
     g_iMockReadCount = count;
 }
 
+void setUphumiditysensorPointerNull()
+{
+    g_SetpointerToNull = 1; // Set flag to indicate that the pointer should be set to null in the mock function
+}
+
 ERROR_TYPE mockreadHumiditySensorData(int32_t *phumiditySensorVal)
 {
 
@@ -64,8 +71,16 @@ ERROR_TYPE mockreadHumiditySensorData(int32_t *phumiditySensorVal)
         }
         else
         {
+            if(g_SetpointerToNull)
+            {
+                phumiditySensorVal = NULL; // Set pointer to null to simulate null pointer scenario
+            }
+            else
+            {
+                /* Mock function to read humidity sensor data */
+                *phumiditySensorVal = g_iMockHumidityValue;
+            }
             /* Mock function to read humidity sensor data */
-            *phumiditySensorVal = g_iMockHumidityValue;
         }
     }
     return g_errorTypeForMock;
