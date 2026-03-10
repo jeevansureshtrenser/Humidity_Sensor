@@ -2,7 +2,7 @@
 CC      = wr-cc
 CFLAGS  = -rtp -static -Iinclude
 TARGET  = humiditysensor.vxe
-SRC     = main.c
+SRC     = main.c monitor.c
 
 .PHONY: all clean
 

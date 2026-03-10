@@ -1,6 +1,6 @@
 # VxWorks Local build and Simulator
 
-Follow the steps below to setup VxWorks environment.
+Follow the steps below to setup VxWorks environment for project.
 
 ## Basic setup
 

@@ -14,9 +14,12 @@ INCLUDE FILES: common.h
 */
 
 /* includes */
+#ifndef UNIT_TEST
 #include <vxWorks.h>
 #include <taskLib.h>
+#endif
 #include <stdio.h>
+#include "monitor.h"
 
 /* defines */
 
@@ -54,13 +57,19 @@ INCLUDE FILES: common.h
 */
 int main(void)
 {
+
     while (1)
     {
-       
-        printf("Humidity monitor\n");
-        taskDelay(100); /* delay for 100 ticks */
+        if (monitorHumiditySensorMonitorloop() != NO_ERROR)
+        {
+            printf("Error in monitoring humidity sensor data\n");
+            return -1; // Return failure if there is an error in monitoring
+        }
+        else
+        {
+            /* No Process*/
+        }
     }
-
     return 0;
 }
 
